@@ -10,6 +10,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -19,10 +20,14 @@ public class DrupalLoginPage {
 
 	final static Log LOG = LogFactory.getLog(DrupalLoginPage.class);
 	
+	String url;
+	
 	String username;
 	String password;
 	
 	public boolean login(WebDriver driver) throws IOException {
+		
+		driver.get(url);
 		
 		WebDriverWait webWait = new WebDriverWait(driver, 5);
 		
@@ -47,7 +52,7 @@ public class DrupalLoginPage {
 			if(!myAccountLink.getText().equals("My account")) {
 				throw new NotFoundException("my account link cannot be found");
 			}
-		} catch (NotFoundException e) {
+		} catch (TimeoutException e) {
 			LOG.error(e.getMessage(), e);
 			
 			// capture screenshot
@@ -75,5 +80,9 @@ public class DrupalLoginPage {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	
+	public void setUrl(String url) {
+		this.url = url;
 	}
 }

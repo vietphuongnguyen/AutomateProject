@@ -6,7 +6,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -18,6 +17,10 @@ import com.mbv.test.util.SeleniumUtils;
 
 public class ImportEnrollReviewPage {
 
+	final static String STATUS_PENDING = "pending";
+	final static String STATUS_AUTHORIZED = "authorized";
+	final static String STATUS_DENIED = "denied";
+	
 	final static Log LOG = LogFactory.getLog(ImportEnrollReviewPage.class);
 
 	String memo;
@@ -40,6 +43,12 @@ public class ImportEnrollReviewPage {
 
 		orgTxt.sendKeys(orgID);
 
+		// set status to authorized
+		Select statusSelect = new Select(webDriverWait.until(
+				ExpectedConditions.presenceOfElementLocated(By.cssSelector("select#edit-status"))));
+		
+		statusSelect.selectByValue(status);
+		
 		// blur trigger blur event on text for ajax loading
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		StringBuilder stringBuilder = new StringBuilder();
@@ -74,8 +83,6 @@ public class ImportEnrollReviewPage {
 		Select select = new Select(selectElement);
 		select.selectByValue(selectGroup);
 
-		SeleniumUtils.capture(driver, "selected.png");
-
 		try {
 			selectElement.isDisplayed();
 			WebElement saveTask = webDriverWait.until(ExpectedConditions
@@ -83,8 +90,6 @@ public class ImportEnrollReviewPage {
 							.cssSelector("input#edit-submit")));
 
 			saveTask.click();
-
-			SeleniumUtils.capture(driver, "submit.png");
 		} catch (Exception e) {
 			LOG.info("fucking ajax replaced element");
 			selectElement = webDriverWait.until(ExpectedConditions
@@ -99,8 +104,6 @@ public class ImportEnrollReviewPage {
 							.cssSelector("input#edit-submit")));
 
 			saveTask.click();
-			
-			SeleniumUtils.capture(driver, "submit.png");
 		}
 	}
 

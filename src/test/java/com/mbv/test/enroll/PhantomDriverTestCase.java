@@ -16,6 +16,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.google.common.base.Predicate;
+import com.mbv.test.util.SeleniumUtils;
 
 public class PhantomDriverTestCase {
 
@@ -25,16 +26,16 @@ public class PhantomDriverTestCase {
 	EnrollExcelUploadPage uploadPage = new EnrollExcelUploadPage();
 	ImportEnrollReviewPage reviewPage = new ImportEnrollReviewPage();
 	
-	@Test
+	DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
+	PhantomJSDriver driver = new PhantomJSDriver(capabilities);
+	
+//	@Test
 	public void testSearchReturnsResults() throws IOException {
 		// Create instance of PhantomJS driver
-		DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
-		PhantomJSDriver driver = new PhantomJSDriver(capabilities);
-
 		driver.get("http://localhost/drupal-7.26/");
 		
 		loginPage.setUsername("admin");
-		loginPage.setPassword("Aesx5099");
+		loginPage.setPassword("Aesax5099");
 		
 		boolean isLogged = loginPage.login(driver);
 		
@@ -48,10 +49,10 @@ public class PhantomDriverTestCase {
 		
 		uploadPage.upload(driver);
 		
-		reviewPage.setMemo("test-task-01");
+		reviewPage.setMemo("test-task-02");
 		reviewPage.setOrgID("DMCL");
 		reviewPage.setSelectGroup("admin:427573d6-6571-4ff7-844f-ba6d95eab534");
-		reviewPage.setStatus("");
+		reviewPage.setStatus(ImportEnrollReviewPage.STATUS_AUTHORIZED);
 		
 		final String reviewURL = driver.getCurrentUrl();
 		
@@ -80,5 +81,29 @@ public class PhantomDriverTestCase {
 		File screenshot = ((TakesScreenshot) driver)
                 .getScreenshotAs(OutputType.FILE);
 		FileUtils.copyFile(screenshot, new File("final.png"));
+	}
+	
+	@Test
+	public void testSearchEnrollmentResults() throws IOException {
+		driver.get("http://localhost/drupal-7.26/");
+		
+		loginPage.setUsername("admin");
+		loginPage.setPassword("Aesx5099");
+		
+		boolean isLogged = loginPage.login(driver);
+		
+		if(isLogged) {
+			System.out.println("Logged in successfully!!!");
+		} else {
+			System.out.println("Logged in failed!!!");
+		}
+		
+		EnrollmentRequestPage enrollemtPage = new EnrollmentRequestPage();
+		//enrollemtPage.setStatusFilter("pending");
+		enrollemtPage.setMobileFilter("0986858724");
+		
+		enrollemtPage.searchAndSelectPendingRequest(driver);
+		
+		SeleniumUtils.capture(driver, "result.png");
 	}
 }
